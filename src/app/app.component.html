@@ -1,19 +1,69 @@
-<h2>my-app</h2>
-<h3>input address</h3>
-<input [(ngModel)]="address" placeholder="input address">
-<button (click)="changeAddress(address)">set address</button>
+<!--Dashboard-->
+<div class="grid-container">
+  <h1 class="mat-h1">My-app</h1>
+  <mat-grid-list cols="2" rowHeight="450px">
 
-<!--入力したaddressを表示-->
-<h3>address</h3>
-<div>address : {{ address }}</div>
+    <!--Bob-->
+    <mat-grid-tile [colspan]="1" [rowspan]="1">
+      <mat-card class="dashboard-card">
+        <mat-card-header>
+          <mat-card-title>
+            Bob
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="dashboard-card-content">
+          <h3>
+            <div>address : {{ this.accAddressBob }}</div>
+          </h3>
 
-<!--所持tokenを表示-->
-<ng-container *ngIf="balances$ | async as balances">
-  <h3>balances</h3>
-  <ng-container *ngFor="let balance of balances">
-    <div>token: {{ balance.denom }} balance: {{ balance.amount }}</div>
-  </ng-container>
-</ng-container>
+          <!--所持tokenを表示-->
+          <ng-container *ngIf="balancesBob$ | async as balancesBob">
+            <h3>balances</h3>
+            <ng-container *ngFor="let balanceBob of balancesBob">
+              <div>token: {{ balanceBob.denom }} balance: {{ balanceBob.amount }}</div>
+            </ng-container>
+          </ng-container>
 
-<!--送金-->
-<button (click)="sendTx()">send</button>
+          <!--送信フォーム-->
+          <form #formRef="ngForm" class="mt-4">
+            <mat-select placeholder="Select" class="w-1/2">
+              <mat-option *ngFor="let denomB of denoms" [value]="denomB">{{denomB}}</mat-option>
+            </mat-select>
+            <button mat-flat-button color="primary" (click)="sendTxFromBob()">Sign</button>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+
+    <!--Alice-->
+    <mat-grid-tile [colspan]="1" [rowspan]="1">
+      <mat-card class="dashboard-card">
+        <mat-card-header>
+          <mat-card-title>Alice</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="dashboard-card-content">
+          <h3>
+            <div>address : {{ this.accAddressAlice }}</div>
+          </h3>
+
+          <!--所持tokenを表示-->
+          <ng-container *ngIf="balancesAlice$ | async as balancesAlice">
+            <h3>balances</h3>
+            <ng-container *ngFor="let balanceAlice of balancesAlice">
+              <div>token: {{ balanceAlice.denom }} balance: {{ balanceAlice.amount }}</div>
+            </ng-container>
+          </ng-container>
+
+          <!--送信フォーム-->
+          <form #formRef="ngForm" class="mt-4">
+            <mat-select placeholder="Select" class="w-1/2">
+              <mat-option *ngFor="let denom of denoms" [value]="denom">{{denom}}</mat-option>
+            </mat-select>
+            <button mat-flat-button color="accent" (click)="sendTxFromAlice()">Sign</button>
+          </form>
+
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>
