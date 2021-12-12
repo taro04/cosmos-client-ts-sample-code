@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { combineLatest, BehaviorSubject, of, Observable } from 'rxjs';
-import { catchError, map, mergeMap } from 'rxjs/operators';
+import { combineLatest, BehaviorSubject, of, Observable, timer, zip, } from 'rxjs';
+import { catchError, map, mergeMap, } from 'rxjs/operators';
 import { cosmosclient, proto, rest } from 'cosmos-client';
 import { InlineResponse20027Balances } from 'cosmos-client/cjs/openapi/api';
+import { AccAddress } from 'cosmos-client/cjs/types';
 
 @Component({
   selector: 'app-root',
@@ -13,10 +14,7 @@ export class AppComponent implements OnInit {
 
   nodeURL = 'http://localhost:1317';
   chainID = "mars";
-  sdk: cosmosclient.CosmosSDK;
-
   denoms = ["stake", "token"]
-
 
   /* old
   🙂 Created account "alice" with address "cosmos1arvtrek9t0rxtsgdpnyupjmmhv4kt9p5jxd9xs"
@@ -34,35 +32,34 @@ export class AppComponent implements OnInit {
   //power cereal remind render enhance muffin kangaroo snow hill nature bleak defense summer crisp scare muscle tiger dress behave verb pond merry voyage already
 
 
-
-  toAddress: cosmosclient.AccAddress | undefined
-
-
   balancesAlice$: Observable<InlineResponse20027Balances[] | undefined>;
   accAddressAlice: cosmosclient.AccAddress;
 
   balancesBob$: Observable<InlineResponse20027Balances[] | undefined>;
   accAddressBob: cosmosclient.AccAddress;
 
-  sdk$: Observable<cosmosclient.CosmosSDK>;
+  sdk$: Observable<cosmosclient.CosmosSDK> = of(new cosmosclient.CosmosSDK(this.nodeURL, this.chainID));;
+  timer$: Observable<number> = timer(0, 3 * 1000);
 
   constructor() {
 
-    this.sdk = new cosmosclient.CosmosSDK(this.nodeURL, this.chainID);
-    this.sdk$ = of(new cosmosclient.CosmosSDK(this.nodeURL, this.chainID));
+    //polling
+    //this.sdk$ = this.timer$.pipe(mergeMap((_) => { return this.sdk$ }));
 
     //Aliceの所持tokenを取得
     this.accAddressAlice = cosmosclient.AccAddress.fromString("cosmos1lhaml37gselnnthjh9q2av2pkyf9hh67zy9maz")
-    this.balancesAlice$ = this.sdk$.pipe(
-      mergeMap((sdk) => {
+    this.balancesAlice$ = combineLatest(this.timer$, this.sdk$).pipe(
+      mergeMap(([n, sdk]) => {
+        console.log("in Alice", n)
         return rest.cosmos.bank.allBalances(sdk, this.accAddressAlice).then(res => res.data.balances);
       }),
     )
 
     //Bobの所持tokenを取得
     this.accAddressBob = cosmosclient.AccAddress.fromString("cosmos1jwk3yttut7645kxwnuehkkzey2ztph9zklsu7u")
-    this.balancesBob$ = this.sdk$.pipe(
-      mergeMap((sdk) => {
+    this.balancesBob$ = combineLatest(this.timer$, this.sdk$).pipe(
+      mergeMap(([n, sdk]) => {
+        console.log("in Bob", n)
         return rest.cosmos.bank.allBalances(sdk, this.accAddressBob).then(res => res.data.balances);
       }),
     )
@@ -70,21 +67,36 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void { }
 
+  //pubkey ***サンプルコードのため、ニーモニックをハードコーディングしています。***
+  //       ***アカウントのすべてのコントロールを渡すことになるので、決してマネしないよう。***
+  mnemonicA = 'power cereal remind render enhance muffin kangaroo snow hill nature bleak defense summer crisp scare muscle tiger dress behave verb pond merry voyage already'
+  mnemonicB = 'funny jungle scout crisp tissue dish talk tattoo alone scheme clog kiwi delay property current argue conduct west bounce reason abandon coral lawsuit hunt'
 
 
   //txを送信
-  async sendTxFromAlice(): Promise<void> {
+  async sendTx(
+    mnemonic: string,
+    sdk_in: Observable<cosmosclient.CosmosSDK>,
+    toAddress: AccAddress,
+    denom: string,
+    amount: string,
+  ): Promise<void> {
 
-    //pubkey ***サンプルコードのため、ニーモニックをハードコーディングしています。***
-    //       ***アカウントのすべてのコントロールを渡すことになるので、決してマネしないよう。***
-    const privateKeyAlice = new proto.cosmos.crypto.secp256k1.PrivKey({
-      key: await cosmosclient.generatePrivKeyFromMnemonic('power cereal remind render enhance muffin kangaroo snow hill nature bleak defense summer crisp scare muscle tiger dress behave verb pond merry voyage already'),
+    //sdk
+    const sdk = await sdk_in.toPromise()
+    const sendTokens: proto.cosmos.base.v1beta1.ICoin = { denom: denom, amount: amount }
+
+    //Address
+    const privateKey = new proto.cosmos.crypto.secp256k1.PrivKey({
+      key: await cosmosclient.generatePrivKeyFromMnemonic(mnemonic),
     });
-    const publicKeyAlice = privateKeyAlice.pubKey();
+    const publicKey = privateKey.pubKey();
+    const fromAddress: AccAddress = cosmosclient.AccAddress.fromPublicKey(publicKey)
+    //const toAddress :AccAddress //入力
 
-    // get account info (telescope)
+    // get account info
     const account = await rest.cosmos.auth
-      .account(this.sdk, this.accAddressAlice)
+      .account(sdk, fromAddress)
       .then((res) => res.data.account && cosmosclient.codec.unpackCosmosAny(res.data.account))
       .catch((_) => undefined);
     if (!(account instanceof proto.cosmos.auth.v1beta1.BaseAccount)) {
@@ -93,9 +105,9 @@ export class AppComponent implements OnInit {
 
     // build MsgSend
     const msgSend = new proto.cosmos.bank.v1beta1.MsgSend({
-      from_address: this.accAddressAlice.toString(),
-      to_address: this.accAddressBob.toString(),
-      amount: [{ denom: 'stake', amount: '10' }],
+      from_address: fromAddress.toString(),
+      to_address: toAddress.toString(),
+      amount: [sendTokens],
     });
 
     // build TxBody
@@ -107,7 +119,7 @@ export class AppComponent implements OnInit {
     const authInfo = new proto.cosmos.tx.v1beta1.AuthInfo({
       signer_infos: [
         {
-          public_key: cosmosclient.codec.packAny(publicKeyAlice),
+          public_key: cosmosclient.codec.packAny(publicKey),
           mode_info: {
             single: {
               mode: proto.cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT,
@@ -117,83 +129,52 @@ export class AppComponent implements OnInit {
         },
       ],
       fee: {
+        amount: [sendTokens],
         gas_limit: cosmosclient.Long.fromString('200000'),
       },
     });
 
     // sign
-    const txBuilder = new cosmosclient.TxBuilder(this.sdk, txBody, authInfo);
+    const txBuilder = new cosmosclient.TxBuilder(sdk, txBody, authInfo);
+
+    //Check fee
+    /*
+    // restore json from txBuilder
+    const txForSimulation = JSON.parse(txBuilder.cosmosJSONStringify());
+
+    // fix JSONstringify issue
+    delete txForSimulation.auth_info.signer_infos[0].mode_info.multi;
+
+    // simulate
+    const simulatedResult = await rest.cosmos.tx.simulate(sdk, {
+      tx: txForSimulation,
+      //tx_bytes: txBuilder.txBytes(),
+    });
+    console.log('simulatedResult', simulatedResult);
+    */
+
     const signDocBytes = txBuilder.signDocBytes(account.account_number);
-    txBuilder.addSignature(privateKeyAlice.sign(signDocBytes));
+    txBuilder.addSignature(privateKey.sign(signDocBytes));
 
     // broadcast
-    const res = await rest.cosmos.tx.broadcastTx(this.sdk, {
+    const res = await rest.cosmos.tx.broadcastTx(sdk, {
       tx_bytes: txBuilder.txBytes(),
       mode: rest.cosmos.tx.BroadcastTxMode.Block,
     });
     console.log("tx_res", res);
   }
 
-  //txを送信
-  async sendTxFromBob(): Promise<void> {
-    //console.log(denom)
 
-    //pubkey ***サンプルコードのため、ニーモニックをハードコーディングしています。***
-    //       ***アカウントのすべてのコントロールを渡すことになるので、決してマネしないよう。***
-    const privateKeyBob = new proto.cosmos.crypto.secp256k1.PrivKey({
-      key: await cosmosclient.generatePrivKeyFromMnemonic('funny jungle scout crisp tissue dish talk tattoo alone scheme clog kiwi delay property current argue conduct west bounce reason abandon coral lawsuit hunt'),
-    });
-    const publicKeyBob = privateKeyBob.pubKey();
+  async simulatedTx(
+    sdk_in: Observable<cosmosclient.CosmosSDK>,
+    txBuilder: cosmosclient.TxBuilder
+  ): Promise<proto.cosmos.base.v1beta1.ICoin> {
 
-    // get account info (telescope)
-    const account = await rest.cosmos.auth
-      .account(this.sdk, this.accAddressBob)
-      .then((res) => res.data.account && cosmosclient.codec.unpackCosmosAny(res.data.account))
-      .catch((_) => undefined);
-    if (!(account instanceof proto.cosmos.auth.v1beta1.BaseAccount)) {
-      throw Error('Address not found');
-    }
+    var fee: proto.cosmos.base.v1beta1.ICoin = {}
 
-    // build MsgSend
-    const msgSend = new proto.cosmos.bank.v1beta1.MsgSend({
-      from_address: this.accAddressBob.toString(),
-      to_address: this.accAddressAlice.toString(),
-      amount: [{ denom: "stake", amount: '10' }],
-    });
+    //sdk
+    const sdk = await sdk_in.toPromise()
 
-    // build TxBody
-    const txBody = new proto.cosmos.tx.v1beta1.TxBody({
-      messages: [cosmosclient.codec.packAny(msgSend)],
-    });
-
-    // build authInfo
-    const authInfo = new proto.cosmos.tx.v1beta1.AuthInfo({
-      signer_infos: [
-        {
-          public_key: cosmosclient.codec.packAny(publicKeyBob),
-          mode_info: {
-            single: {
-              mode: proto.cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT,
-            },
-          },
-          sequence: account.sequence,
-        },
-      ],
-      fee: {
-        gas_limit: cosmosclient.Long.fromString('200000'),
-      },
-    });
-
-    // sign
-    const txBuilder = new cosmosclient.TxBuilder(this.sdk, txBody, authInfo);
-    const signDocBytes = txBuilder.signDocBytes(account.account_number);
-    txBuilder.addSignature(privateKeyBob.sign(signDocBytes));
-
-    // broadcast
-    const res = await rest.cosmos.tx.broadcastTx(this.sdk, {
-      tx_bytes: txBuilder.txBytes(),
-      mode: rest.cosmos.tx.BroadcastTxMode.Block,
-    });
-    console.log("tx_res", res);
+    return fee
   }
 }

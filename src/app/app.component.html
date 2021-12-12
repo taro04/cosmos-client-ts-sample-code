@@ -29,7 +29,9 @@
             <mat-select placeholder="Select" class="w-1/2">
               <mat-option *ngFor="let denomB of denoms" [value]="denomB">{{denomB}}</mat-option>
             </mat-select>
-            <button mat-flat-button color="primary" (click)="sendTxFromBob()">Sign</button>
+
+            <button mat-flat-button color="primary"
+              (click)="sendTx(mnemonicB,sdk$,accAddressAlice,'stake','8')">Sign</button>
           </form>
         </mat-card-content>
       </mat-card>
@@ -55,13 +57,21 @@
           </ng-container>
 
           <!--送信フォーム-->
-          <form #formRef="ngForm" class="mt-4">
-            <mat-select placeholder="Select" class="w-1/2">
+          <form #formA="ngForm" class="mt-4"
+            (submit)="sendTx(mnemonicA,sdk$,accAddressBob,denomRef.value,amountRef.value)">
+            <mat-form-field appearance="fill">
+              <mat-label>amount</mat-label>
+              <input #amountRef matInput required id="amountValue" name="amountValue" />
+            </mat-form-field>
+            <mat-select #denomRef placeholder="Select" name="denomOption" required>
               <mat-option *ngFor="let denom of denoms" [value]="denom">{{denom}}</mat-option>
             </mat-select>
-            <button mat-flat-button color="accent" (click)="sendTxFromAlice()">Sign</button>
+            <button mat-flat-button color="accent" [disabled]="formA.invalid">Sign</button>
+            <!--
+            <button mat-flat-button color="accent" [disabled]="amountRef.errors?.required">A</button>
+            <button mat-flat-button color="accent" [disabled]="denomOption.errors?.required">B</button>
+            -->
           </form>
-
         </mat-card-content>
       </mat-card>
     </mat-grid-tile>
