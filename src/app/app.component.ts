@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { combineLatest, BehaviorSubject, of, Observable, timer, zip, } from 'rxjs';
 import { catchError, map, mergeMap, } from 'rxjs/operators';
-import { cosmosclient, proto, rest } from 'cosmos-client';
+//import { cosmosclient, proto, rest } from 'cosmos-client';
+import { cosmosclient, proto, rest, } from '@cosmos-client/core';
 import { InlineResponse20027Balances } from 'cosmos-client/cjs/openapi/api';
-import { AccAddress } from 'cosmos-client/cjs/types';
+import { AccAddress } from '@cosmos-client/core/cjs/types/address/acc-address';
 
 @Component({
   selector: 'app-root',
@@ -51,7 +52,7 @@ export class AppComponent implements OnInit {
     this.balancesAlice$ = combineLatest(this.timer$, this.sdk$).pipe(
       mergeMap(([n, sdk]) => {
         console.log("in Alice", n)
-        return rest.cosmos.bank.allBalances(sdk, this.accAddressAlice).then(res => res.data.balances);
+        return rest.bank.allBalances(sdk, this.accAddressAlice).then(res => res.data.balances);
       }),
     )
 
@@ -60,7 +61,7 @@ export class AppComponent implements OnInit {
     this.balancesBob$ = combineLatest(this.timer$, this.sdk$).pipe(
       mergeMap(([n, sdk]) => {
         console.log("in Bob", n)
-        return rest.cosmos.bank.allBalances(sdk, this.accAddressBob).then(res => res.data.balances);
+        return rest.bank.allBalances(sdk, this.accAddressBob).then(res => res.data.balances);
       }),
     )
   }
@@ -95,7 +96,7 @@ export class AppComponent implements OnInit {
     //const toAddress :AccAddress //入力
 
     // get account info
-    const account = await rest.cosmos.auth
+    const account = await rest.auth
       .account(sdk, fromAddress)
       .then((res) => res.data.account && cosmosclient.codec.unpackCosmosAny(res.data.account))
       .catch((_) => undefined);
@@ -138,28 +139,32 @@ export class AppComponent implements OnInit {
     const txBuilder = new cosmosclient.TxBuilder(sdk, txBody, authInfo);
 
     //Check fee
-    /*
+
     // restore json from txBuilder
     const txForSimulation = JSON.parse(txBuilder.cosmosJSONStringify());
+    console.log("txf", txForSimulation)
 
     // fix JSONstringify issue
     delete txForSimulation.auth_info.signer_infos[0].mode_info.multi;
+    console.log("txfd", txForSimulation)
+
 
     // simulate
-    const simulatedResult = await rest.cosmos.tx.simulate(sdk, {
+
+    const simulatedResult = await rest.tx.simulate(sdk, {
       tx: txForSimulation,
-      //tx_bytes: txBuilder.txBytes(),
+      tx_bytes: txBuilder.txBytes(),
     });
     console.log('simulatedResult', simulatedResult);
-    */
+
 
     const signDocBytes = txBuilder.signDocBytes(account.account_number);
     txBuilder.addSignature(privateKey.sign(signDocBytes));
 
     // broadcast
-    const res = await rest.cosmos.tx.broadcastTx(sdk, {
+    const res = await rest.tx.broadcastTx(sdk, {
       tx_bytes: txBuilder.txBytes(),
-      mode: rest.cosmos.tx.BroadcastTxMode.Block,
+      mode: rest.tx.BroadcastTxMode.Block,
     });
     console.log("tx_res", res);
   }
