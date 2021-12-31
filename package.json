@@ -22,7 +22,6 @@
     "@angular/router": "~12.0.2",
     "@cosmos-client/core": "^0.44.4",
     "@ngneat/tailwind": "^7.0.3",
-    "cosmos-client": "^0.42.14",
     "crypto-browserify": "^3.12.0",
     "process": "^0.11.10",
     "rxjs": "~6.6.0",
