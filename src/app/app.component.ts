@@ -158,9 +158,8 @@ export class AppComponent implements OnInit {
     const simulatedGasUsedWithMargin =
       simulatedGasUsedWithMarginNumber.toFixed(0);
 
-    // minimumGasPrice depends on Node's config(`~/.jpyx/config/app.toml` minimum-gas-prices).
+    // minimumGasPrice depends on Node's config(`~/.mars/config/app.toml` minimum-gas-prices).
     const simulatedFeeWithMarginNumber =
-      //parseInt(simulatedGasUsedWithMargin) * parseFloat(amount ? amount : '0');
       parseInt(simulatedGasUsedWithMargin) * parseFloat(this.gasPrices);
     const simulatedFeeWithMargin = Math.ceil(
       simulatedFeeWithMarginNumber
