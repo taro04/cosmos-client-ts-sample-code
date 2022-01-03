@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { combineLatest, BehaviorSubject, of, Observable, timer } from 'rxjs';
-import { catchError, map, mergeMap } from 'rxjs/operators';
+import { combineLatest, of, Observable, timer } from 'rxjs';
+import { mergeMap } from 'rxjs/operators';
 import { cosmosclient, proto, rest } from '@cosmos-client/core';
 import { InlineResponse20028Balances } from '@cosmos-client/core/cjs/openapi/api';
 import { AccAddress } from '@cosmos-client/core/cjs/types/address/acc-address';
@@ -14,29 +14,14 @@ export class AppComponent implements OnInit {
   nodeURL = 'http://localhost:1317';
   chainID = 'mars';
   denoms = ['stake', 'token'];
-
-  /* old
-  🙂 Created account "alice" with address "cosmos1arvtrek9t0rxtsgdpnyupjmmhv4kt9p5jxd9xs"
-   with mnemonic: "chimney lock primary across wheel hero buffalo casual consider jump predict tragic dirt rifle foam already control speak stool physical idea frequent domain language"
-  🙂 Created account "bob" with address "cosmos1we9yezzd5482lvpz3nw0s3qu4n00xh3a80grcj"
-   with mnemonic: "picture expect casino bacon expire tortoise umbrella feature boy helmet heavy island slush spot repair situate eye dial nothing left pepper bunker clump describe"
-  */
-
-  /*latest*/
-  //bob
-  //cosmos1jwk3yttut7645kxwnuehkkzey2ztph9zklsu7u
-  //funny jungle scout crisp tissue dish talk tattoo alone scheme clog kiwi delay property current argue conduct west bounce reason abandon coral lawsuit hunt
-  //alice
-  //cosmos1lhaml37gselnnthjh9q2av2pkyf9hh67zy9maz
-  //power cereal remind render enhance muffin kangaroo snow hill nature bleak defense summer crisp scare muscle tiger dress behave verb pond merry voyage already
-
-  /*20211231Reset*/
-  //alice
-  //"cosmos1gt20f4as2qhdm4rfefyfzdxj67rynkgm7pcuqt"
-  //"thought used easily hard regular cart afford clock sign entire okay eight endless moon wolf sting actress couch kite trust divide witness empty staff"
-  //bob
-  //"cosmos1mdqakdcu57el3y4ck38h5y03ax2krwlrctpavf"
-  //"tragic offer chalk comfort victory fame song blast dry expire fetch board legal quote volcano maze insane fresh solar wolf shell float category emerge"
+  gasPrices = '0.1';
+  gasDenom = this.denoms[0];
+  mnemonicA =
+    'power cereal remind render enhance muffin kangaroo snow hill nature bleak defense summer crisp scare muscle tiger dress behave verb pond merry voyage already';
+  mnemonicB =
+    'funny jungle scout crisp tissue dish talk tattoo alone scheme clog kiwi delay property current argue conduct west bounce reason abandon coral lawsuit hunt';
+  //pubkey ***サンプルコードのため、ニーモニックをハードコーディングしています。***
+  //       ***アカウントのすべてのコントロールを渡すことになるので、決してマネしないよう。***
 
   balancesAlice$: Observable<InlineResponse20028Balances[] | undefined>;
   accAddressAlice: cosmosclient.AccAddress;
@@ -52,11 +37,10 @@ export class AppComponent implements OnInit {
   constructor() {
     //Aliceの所持tokenを取得
     this.accAddressAlice = cosmosclient.AccAddress.fromString(
-      'cosmos1gt20f4as2qhdm4rfefyfzdxj67rynkgm7pcuqt'
+      'cosmos1lhaml37gselnnthjh9q2av2pkyf9hh67zy9maz'
     );
     this.balancesAlice$ = combineLatest(this.timer$, this.sdk$).pipe(
       mergeMap(([n, sdk]) => {
-        console.log('in Alice', n);
         return rest.bank
           .allBalances(sdk, this.accAddressAlice)
           .then((res) => res.data.balances);
@@ -65,11 +49,10 @@ export class AppComponent implements OnInit {
 
     //Bobの所持tokenを取得
     this.accAddressBob = cosmosclient.AccAddress.fromString(
-      'cosmos1mdqakdcu57el3y4ck38h5y03ax2krwlrctpavf'
+      'cosmos1jwk3yttut7645kxwnuehkkzey2ztph9zklsu7u'
     );
     this.balancesBob$ = combineLatest(this.timer$, this.sdk$).pipe(
       mergeMap(([n, sdk]) => {
-        console.log('in Bob', n);
         return rest.bank
           .allBalances(sdk, this.accAddressBob)
           .then((res) => res.data.balances);
@@ -78,13 +61,6 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {}
-
-  //pubkey ***サンプルコードのため、ニーモニックをハードコーディングしています。***
-  //       ***アカウントのすべてのコントロールを渡すことになるので、決してマネしないよう。***
-  mnemonicA =
-    'thought used easily hard regular cart afford clock sign entire okay eight endless moon wolf sting actress couch kite trust divide witness empty staff';
-  mnemonicB =
-    'tragic offer chalk comfort victory fame song blast dry expire fetch board legal quote volcano maze insane fresh solar wolf shell float category emerge';
 
   //txを送信
   async sendTx(
@@ -150,7 +126,7 @@ export class AppComponent implements OnInit {
         },
       ],
       fee: {
-        amount: [{ denom: denom, amount: '1' }],
+        amount: [{ denom: this.gasDenom, amount: '1' }],
         gas_limit: cosmosclient.Long.fromString('200000'),
       },
     });
@@ -162,11 +138,9 @@ export class AppComponent implements OnInit {
 
     // restore json from txBuilder
     const txForSimulation = JSON.parse(txBuilderSim.cosmosJSONStringify());
-    console.log('txf', txForSimulation);
 
     // fix JSONstringify issue
     delete txForSimulation.auth_info.signer_infos[0].mode_info.multi;
-    console.log('txfd', txForSimulation);
 
     // simulate
     const simulatedResult = await rest.tx.simulate(sdk, {
@@ -187,7 +161,7 @@ export class AppComponent implements OnInit {
     // minimumGasPrice depends on Node's config(`~/.jpyx/config/app.toml` minimum-gas-prices).
     const simulatedFeeWithMarginNumber =
       //parseInt(simulatedGasUsedWithMargin) * parseFloat(amount ? amount : '0');
-      parseInt(simulatedGasUsedWithMargin) * parseFloat('0.1');
+      parseInt(simulatedGasUsedWithMargin) * parseFloat(this.gasPrices);
     const simulatedFeeWithMargin = Math.ceil(
       simulatedFeeWithMarginNumber
     ).toFixed(0);
@@ -214,7 +188,7 @@ export class AppComponent implements OnInit {
         },
       ],
       fee: {
-        amount: [{ denom: denom, amount: simulatedFeeWithMargin }],
+        amount: [{ denom: this.gasDenom, amount: simulatedFeeWithMargin }],
         gas_limit: cosmosclient.Long.fromString(
           simulatedGasUsedWithMargin ? simulatedGasUsedWithMargin : '200000'
         ),
