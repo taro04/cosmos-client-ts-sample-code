@@ -1,8 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { combineLatest, of, Observable, timer } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
+import { combineLatest, from, of, Observable, timer } from 'rxjs';
+import { mergeMap, map } from 'rxjs/operators';
 import { cosmosclient, proto, rest } from '@cosmos-client/core';
-import { InlineResponse20028Balances } from '@cosmos-client/core/cjs/openapi/api';
+import {
+  InlineResponse20028Balances,
+  InlineResponse20033,
+  QueryTotalSupplyResponseIsTheResponseTypeForTheQueryTotalSupplyRPCMethod,
+  QueryValidatorsResponseIsResponseTypeForTheQueryValidatorsRPCMethod,
+} from '@cosmos-client/core/cjs/openapi/api';
 import { AccAddress } from '@cosmos-client/core/cjs/types/address/acc-address';
 
 @Component({
@@ -14,7 +19,7 @@ export class AppComponent implements OnInit {
   nodeURL = 'http://localhost:1317';
   chainID = 'mars';
   denoms = ['stake', 'token'];
-  gasPrices = '0.1';
+  gasPrice = '0.1';
   gasDenom = this.denoms[0];
   mnemonicA =
     'power cereal remind render enhance muffin kangaroo snow hill nature bleak defense summer crisp scare muscle tiger dress behave verb pond merry voyage already';
@@ -23,11 +28,21 @@ export class AppComponent implements OnInit {
   //pubkey ***サンプルコードのため、ニーモニックをハードコーディングしています。***
   //       ***アカウントのすべてのコントロールを渡すことになるので、決してマネしないよう。***
 
+  totalSupply$: Observable<QueryTotalSupplyResponseIsTheResponseTypeForTheQueryTotalSupplyRPCMethod>;
+  validators$: Observable<QueryValidatorsResponseIsResponseTypeForTheQueryValidatorsRPCMethod>;
+
+  params$: Observable<InlineResponse20033>;
+
   balancesAlice$: Observable<InlineResponse20028Balances[] | undefined>;
-  accAddressAlice: cosmosclient.AccAddress;
+  balancesValAlice$: Observable<InlineResponse20028Balances[] | undefined>;
+  accAddressAlice$: Observable<cosmosclient.AccAddress>;
+  valAddressAlice$: Observable<cosmosclient.ValAddress>;
+  publicKeyAlice$: Observable<cosmosclient.PubKey>;
 
   balancesBob$: Observable<InlineResponse20028Balances[] | undefined>;
-  accAddressBob: cosmosclient.AccAddress;
+  accAddressBob$: Observable<cosmosclient.AccAddress>;
+  valAddressBob$: Observable<cosmosclient.ValAddress>;
+  publicKeyBob$: Observable<cosmosclient.PubKey>;
 
   sdk$: Observable<cosmosclient.CosmosSDK> = of(
     new cosmosclient.CosmosSDK(this.nodeURL, this.chainID)
@@ -35,29 +50,97 @@ export class AppComponent implements OnInit {
   timer$: Observable<number> = timer(0, 3 * 1000);
 
   constructor() {
-    //Aliceの所持tokenを取得
-    this.accAddressAlice = cosmosclient.AccAddress.fromString(
-      'cosmos1lhaml37gselnnthjh9q2av2pkyf9hh67zy9maz'
+    this.publicKeyAlice$ = from(
+      cosmosclient.generatePrivKeyFromMnemonic(this.mnemonicA)
+    ).pipe(
+      map((privatekey) => {
+        const privateKey = new proto.cosmos.crypto.secp256k1.PrivKey({
+          key: privatekey,
+        });
+        return privateKey.pubKey();
+      })
     );
-    this.balancesAlice$ = combineLatest(this.timer$, this.sdk$).pipe(
-      mergeMap(([n, sdk]) => {
+
+    this.accAddressAlice$ = this.publicKeyAlice$.pipe(
+      map((pubkey) => cosmosclient.AccAddress.fromPublicKey(pubkey))
+    );
+
+    this.valAddressAlice$ = this.publicKeyAlice$.pipe(
+      map((key) => cosmosclient.ValAddress.fromPublicKey(key))
+    );
+
+    //Aliceの所持tokenを取得
+    this.balancesAlice$ = combineLatest([
+      this.timer$,
+      this.sdk$,
+      this.accAddressAlice$,
+    ]).pipe(
+      mergeMap(([n, sdk, accAddress]) => {
         return rest.bank
-          .allBalances(sdk, this.accAddressAlice)
+          .allBalances(sdk, accAddress)
           .then((res) => res.data.balances);
       })
     );
 
-    //Bobの所持tokenを取得
-    this.accAddressBob = cosmosclient.AccAddress.fromString(
-      'cosmos1jwk3yttut7645kxwnuehkkzey2ztph9zklsu7u'
-    );
-    this.balancesBob$ = combineLatest(this.timer$, this.sdk$).pipe(
-      mergeMap(([n, sdk]) => {
+    this.balancesValAlice$ = combineLatest([
+      this.timer$,
+      this.sdk$,
+      this.valAddressAlice$,
+    ]).pipe(
+      mergeMap(([n, sdk, valAddress]) => {
         return rest.bank
-          .allBalances(sdk, this.accAddressBob)
+          .allBalances(sdk, valAddress)
           .then((res) => res.data.balances);
       })
     );
+
+    this.publicKeyBob$ = from(
+      cosmosclient.generatePrivKeyFromMnemonic(this.mnemonicB)
+    ).pipe(
+      map((privatekey) => {
+        const privateKey = new proto.cosmos.crypto.secp256k1.PrivKey({
+          key: privatekey,
+        });
+        return privateKey.pubKey();
+      })
+    );
+
+    this.accAddressBob$ = this.publicKeyBob$.pipe(
+      map((pubkey) => cosmosclient.AccAddress.fromPublicKey(pubkey))
+    );
+
+    this.valAddressBob$ = this.publicKeyBob$.pipe(
+      map((key) => cosmosclient.ValAddress.fromPublicKey(key))
+    );
+
+    //Bobの所持tokenを取得
+    this.balancesBob$ = combineLatest([
+      this.timer$,
+      this.sdk$,
+      this.accAddressBob$,
+    ]).pipe(
+      mergeMap(([n, sdk, accAddressBob]) => {
+        return rest.bank
+          .allBalances(sdk, accAddressBob)
+          .then((res) => res.data.balances);
+      })
+    );
+
+    this.totalSupply$ = combineLatest([this.timer$, this.sdk$]).pipe(
+      mergeMap(([n, sdk]) => rest.bank.totalSupply(sdk).then((res) => res.data))
+    );
+
+    this.validators$ = this.sdk$.pipe(
+      mergeMap((sdk) => rest.staking.validators(sdk)),
+      map((result) => result.data)
+    );
+
+    this.params$ = this.sdk$.pipe(
+      mergeMap((sdk) => rest.bank.params(sdk).then((res) => res.data))
+    );
+
+    //debug
+    this.params$.subscribe((x) => console.log('params', x));
   }
 
   ngOnInit(): void {}
@@ -160,7 +243,7 @@ export class AppComponent implements OnInit {
 
     // minimumGasPrice depends on Node's config(`~/.mars/config/app.toml` minimum-gas-prices).
     const simulatedFeeWithMarginNumber =
-      parseInt(simulatedGasUsedWithMargin) * parseFloat(this.gasPrices);
+      parseInt(simulatedGasUsedWithMargin) * parseFloat(this.gasPrice);
     const simulatedFeeWithMargin = Math.ceil(
       simulatedFeeWithMarginNumber
     ).toFixed(0);

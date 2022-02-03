@@ -1,7 +1,44 @@
 <!--Dashboard-->
 <div class="grid-container">
   <h1 class="mat-h1">My-app</h1>
+
+  <!--supply-->
   <mat-grid-list cols="2" rowHeight="450px">
+    <mat-grid-tile [colspan]="2" [rowspan]="1">
+      <mat-card class="dashboard-card">
+        <mat-card-header>
+          <mat-card-title> Chain total Supply </mat-card-title>
+        </mat-card-header>
+        <ng-container *ngIf="totalSupply$ | async as supply">
+          <ng-container *ngFor="let sup of supply?.supply; last as last">
+            <div>
+              <span>{{ sup.amount | number: "1.0-0" }}</span>
+              <span class="flex-auto"></span>
+              <span>{{ sup.denom }}</span>
+            </div>
+          </ng-container>
+        </ng-container>
+        <h3>Params</h3>
+        <ng-container *ngIf="params$ | async as param">
+          <div>
+            <span>{{ param }}</span>
+            <span class="flex-auto"></span>
+            <span>{{ param }}</span>
+          </div>
+        </ng-container>
+        <h3>Validators</h3>
+        <ng-container *ngIf="validators$ | async as validators">
+          <ng-container *ngFor="let validator of validators?.validators">
+            <mat-list-item routerLink="{{ validator.operator_address }}">
+              <span class="break-all text-sm sm:text-base">
+                {{ validator.operator_address }}
+              </span>
+            </mat-list-item>
+          </ng-container>
+        </ng-container>
+      </mat-card>
+    </mat-grid-tile>
+
     <!--Bob-->
     <mat-grid-tile [colspan]="1" [rowspan]="1">
       <mat-card class="dashboard-card">
@@ -9,8 +46,11 @@
           <mat-card-title> Bob </mat-card-title>
         </mat-card-header>
         <mat-card-content class="dashboard-card-content">
-          <h3>
-            <div>address : {{ this.accAddressBob }}</div>
+          <h3 *ngIf="accAddressBob$ | async as accAddressBob">
+            <div>address : {{ accAddressBob }}</div>
+          </h3>
+          <h3 *ngIf="valAddressBob$ | async as validatorBob">
+            <div>address : {{ validatorBob }}</div>
           </h3>
           <!--所持tokenを表示-->
           <ng-container *ngIf="balancesBob$ | async as balancesBob">
@@ -22,41 +62,43 @@
             </ng-container>
           </ng-container>
           <!--送信フォーム-->
-          <form
-            #formB="ngForm"
-            class="mt-4"
-            (submit)="
-              sendTx(
-                mnemonicB,
-                sdk$,
-                accAddressAlice,
-                denomBRef.value,
-                amountBRef.value
-              )
-            "
-          >
-            <mat-form-field appearance="fill">
-              <mat-label>amount</mat-label>
-              <input
-                #amountBRef
-                matInput
-                required
-                id="amountValue"
-                name="amountValue"
-              />
-            </mat-form-field>
-            <mat-select
-              #denomBRef
-              placeholder="Select"
-              name="denomOption"
-              required
+          <ng-container *ngIf="accAddressAlice$ | async as accAddressAlice">
+            <form
+              #formB="ngForm"
+              class="mt-4"
+              (submit)="
+                sendTx(
+                  mnemonicB,
+                  sdk$,
+                  accAddressAlice,
+                  denomBRef.value,
+                  amountBRef.value
+                )
+              "
             >
-              <mat-option *ngFor="let denom of denoms" [value]="denom">{{
-                denom
-              }}</mat-option>
-            </mat-select>
-            <button mat-flat-button color="primary">Sign</button>
-          </form>
+              <mat-form-field appearance="fill">
+                <mat-label>amount</mat-label>
+                <input
+                  #amountBRef
+                  matInput
+                  required
+                  id="amountValue"
+                  name="amountValue"
+                />
+              </mat-form-field>
+              <mat-select
+                #denomBRef
+                placeholder="Select"
+                name="denomOption"
+                required
+              >
+                <mat-option *ngFor="let denom of denoms" [value]="denom">
+                  {{ denom }}
+                </mat-option>
+              </mat-select>
+              <button mat-flat-button color="primary">Send</button>
+            </form>
+          </ng-container>
         </mat-card-content>
       </mat-card>
     </mat-grid-tile>
@@ -67,9 +109,15 @@
         <mat-card-header>
           <mat-card-title>Alice</mat-card-title>
         </mat-card-header>
-        <mat-card-content class="dashboard-card-content">
+        <mat-card-content
+          class="dashboard-card-content"
+          *ngIf="accAddressAlice$ | async as accAddressAlice"
+        >
           <h3>
-            <div>address : {{ this.accAddressAlice }}</div>
+            <div>address : {{ accAddressAlice }}</div>
+          </h3>
+          <h3 *ngIf="valAddressAlice$ | async as validatorAlice">
+            <div>address : {{ validatorAlice }}</div>
           </h3>
           <!--所持tokenを表示-->
           <ng-container *ngIf="balancesAlice$ | async as balancesAlice">
@@ -82,43 +130,43 @@
             </ng-container>
           </ng-container>
           <!--送信フォーム-->
-          <form
-            #formA="ngForm"
-            class="mt-4"
-            (submit)="
-              sendTx(
-                mnemonicA,
-                sdk$,
-                accAddressBob,
-                denomARef.value,
-                amountARef.value
-              )
-            "
-          >
-            <mat-form-field appearance="fill">
-              <mat-label>amount</mat-label>
-              <input
-                #amountARef
-                matInput
-                required
-                id="amountValue"
-                name="amountValue"
-              />
-            </mat-form-field>
-            <mat-select
-              #denomARef
-              placeholder="Select"
-              name="denomOption"
-              required
+          <ng-container *ngIf="accAddressBob$ | async as accAddressBob">
+            <form
+              #formA="ngForm"
+              class="mt-4"
+              (submit)="
+                sendTx(
+                  mnemonicA,
+                  sdk$,
+                  accAddressBob,
+                  denomARef.value,
+                  amountARef.value
+                )
+              "
             >
-              <mat-option *ngFor="let denom of denoms" [value]="denom">{{
-                denom
-              }}</mat-option>
-            </mat-select>
-            <button mat-flat-button color="accent" [disabled]="formA.invalid">
-              Sign
-            </button>
-          </form>
+              <mat-form-field appearance="fill">
+                <mat-label>amount</mat-label>
+                <input
+                  #amountARef
+                  matInput
+                  required
+                  id="amountValue"
+                  name="amountValue"
+                />
+              </mat-form-field>
+              <mat-select
+                #denomARef
+                placeholder="Select"
+                name="denomOption"
+                required
+              >
+                <mat-option *ngFor="let denom of denoms" [value]="denom">
+                  {{ denom }}
+                </mat-option>
+              </mat-select>
+              <button mat-flat-button color="accent">Send</button>
+            </form>
+          </ng-container>
         </mat-card-content>
       </mat-card>
     </mat-grid-tile>
