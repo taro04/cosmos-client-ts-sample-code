@@ -63,6 +63,10 @@ export class AppComponent implements OnInit {
   sdk$: Observable<cosmosclient.CosmosSDK> = of(
     new cosmosclient.CosmosSDK(this.nodeURL, this.chainID)
   );
+  sdk: cosmosclient.CosmosSDK = new cosmosclient.CosmosSDK(
+    this.nodeURL,
+    this.chainID
+  );
   timer$: Observable<number> = timer(0, 3 * 1000);
 
   constructor() {

@@ -1,0 +1,18 @@
+<p>balances worksSSSSSSSSSSSSS\!</p>
+<h3>Address</h3>
+<div *ngIf="accAddress$ | async as accAddress">
+  <span class="break-all">accAddress : {{ accAddress }}</span>
+</div>
+
+<!--所持tokenを表示-->
+<ng-container *ngIf="balances$ | async as balances">
+  <h3>balances</h3>
+  <ng-container *ngFor="let balance of balances">
+    <div>
+      token: {{ balance.denom }} balance:
+      {{ balance.amount }}
+      <!--   {{ balance.amount | number: "1.6-6" }}-->
+    </div>
+  </ng-container>
+</ng-container>
+<p>balances worksSSSSSSSSSSSSS\END!</p>

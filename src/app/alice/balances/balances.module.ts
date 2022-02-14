@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
 import { BrowserModule } from '@angular/platform-browser';
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatGridListModule } from '@angular/material/grid-list';
@@ -10,17 +10,16 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { AliceComponent } from './alice/alice.component';
-import { BobComponent } from './bob/bob.component';
-import { AliceModule } from './alice/alice.module';
-import { BobModule } from './bob/bob.module';
-import { BalancesModule } from './alice/balances/balances.module';
+
+import { BalancesComponent } from './balances.component';
 
 @NgModule({
-  declarations: [AppComponent, AliceComponent, BobComponent],
+  declarations: [BalancesComponent],
   imports: [
+    CommonModule,
+
+    /*
     BrowserModule,
-    AppRoutingModule,
     FormsModule,
     BrowserAnimationsModule,
     MatGridListModule,
@@ -28,12 +27,8 @@ import { BalancesModule } from './alice/balances/balances.module';
     MatFormFieldModule,
     MatButtonModule,
     MatInputModule,
-    MatSelectModule,
-    AliceModule,
-    BobModule,
-    BalancesModule,
+    MatSelectModule,*/
   ],
-  providers: [],
-  bootstrap: [AppComponent],
+  exports: [BalancesComponent],
 })
-export class AppModule {}
+export class BalancesModule {}

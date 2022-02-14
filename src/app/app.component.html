@@ -66,12 +66,14 @@
     </mat-grid-tile>
 
     <!--Bob-->
+
     <mat-grid-tile [colspan]="1" [rowspan]="1">
       <mat-card class="dashboard-card">
         <mat-card-header>
           <mat-card-title> Bob </mat-card-title>
         </mat-card-header>
         <mat-card-content class="dashboard-card-content">
+          <app-bob [sdk]="sdk"></app-bob>
           <h3>Address</h3>
           <div *ngIf="accAddressBob$ | async as accAddressBob">
             <span class="break-all">accAddress : {{ accAddressBob }}</span>
@@ -170,6 +172,7 @@
           <mat-card-title>Alice</mat-card-title>
         </mat-card-header>
         <mat-card-content class="dashboard-card-content">
+          <app-alice [sdk]="sdk"></app-alice>
           <h3>Address</h3>
           <div *ngIf="accAddressAlice$ | async as accAddressAlice">
             <span class="break-all">accAddress : {{ accAddressAlice }}</span>
