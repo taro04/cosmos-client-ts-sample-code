@@ -1,12 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-
+import { DelegationsComponent } from './delegations/delegations.component';
 
 @NgModule({
-  declarations: [],
-  imports: [
-    CommonModule
-  ]
+  declarations: [DelegationsComponent],
+  imports: [CommonModule],
+  exports: [DelegationsComponent],
 })
-export class AliceModule { }
+export class AliceModule {}

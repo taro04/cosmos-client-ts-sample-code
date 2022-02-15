@@ -299,7 +299,7 @@ export class AppComponent implements OnInit {
       (x) => console.log('delegationRewards', x)
       //delegation responses = null
     );
-    */
+
     //3
     this.delegatorValidators$.subscribe(
       (x) => console.log('delegatorValidators', x)
@@ -321,11 +321,12 @@ export class AppComponent implements OnInit {
     this.validatorOutstandingRewards$.subscribe(
       (x) => console.log('validatorOutstandingRewards', x)
       //0: {denom: 'stake', amount: '7735.140000000000000000'});
-    */
+
     this.delegationsBob$.subscribe((x) => console.log('delegationsBob$', x));
     this.delegationsAlice$.subscribe((x) =>
       console.log('delegationsAlice$', x)
     );
+        */
   }
 
   ngOnInit(): void {}

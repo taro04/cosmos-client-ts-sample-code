@@ -73,16 +73,18 @@
           <mat-card-title> Bob </mat-card-title>
         </mat-card-header>
         <mat-card-content class="dashboard-card-content">
-          <app-bob [sdk]="sdk"></app-bob>
-          <h3>Address</h3>
+          <h3>AccountAddress</h3>
           <div *ngIf="accAddressBob$ | async as accAddressBob">
-            <span class="break-all">accAddress : {{ accAddressBob }}</span>
+            <span class="break-all">{{ accAddressBob }}</span>
           </div>
+          <app-bob [sdk]="sdk"></app-bob>
+
+          <!--
           <div *ngIf="valAddressBob$ | async as validatorBob">
             <span class="break-all">valAddress : {{ validatorBob }}</span>
           </div>
 
-          <!--所持tokenを表示-->
+        所持tokenを表示
           <ng-container *ngIf="balancesBob$ | async as balancesBob">
             <h3>balances</h3>
             <ng-container *ngFor="let balanceBob of balancesBob">
@@ -92,7 +94,7 @@
               </div>
             </ng-container>
           </ng-container>
-          <!--Delegationを表示-->
+          --Delegationを表示--
           <ng-container *ngIf="delegationsBob$ | async as delegationsBob">
             <h3>Delegation</h3>
             <ng-container
@@ -110,7 +112,8 @@
               </span>
             </ng-container>
           </ng-container>
-          <!--送信フォーム-->
+        -->
+          <!--送信フォーム
           <ng-container *ngIf="accAddressAlice$ | async as accAddressAlice">
             <form
               #formB="ngForm"
@@ -147,6 +150,8 @@
               <button mat-flat-button color="primary">Send</button>
             </form>
           </ng-container>
+        -->
+
           <div class="mt-1">
             <button
               mat-flat-button
@@ -172,16 +177,15 @@
           <mat-card-title>Alice</mat-card-title>
         </mat-card-header>
         <mat-card-content class="dashboard-card-content">
-          <app-alice [sdk]="sdk"></app-alice>
-          <h3>Address</h3>
+          <h3>AccountAddress</h3>
           <div *ngIf="accAddressAlice$ | async as accAddressAlice">
-            <span class="break-all">accAddress : {{ accAddressAlice }}</span>
-          </div>
-          <div *ngIf="valAddressAlice$ | async as validatorAlice">
-            <span class="break-all">valAddress : {{ validatorAlice }}</span>
+            <span class="break-all">{{ accAddressAlice }}</span>
           </div>
 
+          <app-alice [sdk]="sdk"></app-alice>
+
           <!--所持tokenを表示-->
+          <!--
           <ng-container *ngIf="balancesAlice$ | async as balancesAlice">
             <h3>balances</h3>
             <ng-container *ngFor="let balanceAlice of balancesAlice">
@@ -192,7 +196,7 @@
             </ng-container>
           </ng-container>
 
-          <!--Delegationを表示-->
+         Delegationを表示
           <ng-container *ngIf="delegationsAlice$ | async as delegationsAlice">
             <h3>Delegation</h3>
             <ng-container
@@ -210,8 +214,9 @@
               </span>
             </ng-container>
           </ng-container>
+        -->
 
-          <!--送信フォーム-->
+          <!--送信フォーム
           <ng-container *ngIf="accAddressBob$ | async as accAddressBob">
             <form
               #formA="ngForm"
@@ -248,7 +253,8 @@
               </mat-select>
               <button mat-flat-button color="accent">Send</button>
             </form>
-          </ng-container>
+
+          </ng-container>-->
         </mat-card-content>
       </mat-card>
     </mat-grid-tile>

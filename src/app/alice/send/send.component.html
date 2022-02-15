@@ -1,0 +1,27 @@
+<p>*Token Send</p>
+<!--送信フォーム-->
+<ng-container *ngIf="toAddress as accAddress">
+  <form
+    #formB="ngForm"
+    (submit)="
+      sendTx(mnemonic || '', toAddress, denomBRef.value, amountBRef.value)
+    "
+  >
+    <mat-form-field appearance="fill">
+      <mat-label>amount</mat-label>
+      <input
+        #amountBRef
+        matInput
+        required
+        id="amountValue"
+        name="amountValue"
+      />
+    </mat-form-field>
+    <mat-select #denomBRef placeholder="Select" name="denomOption" required>
+      <mat-option *ngFor="let denom of denoms" [value]="denom">
+        {{ denom }}
+      </mat-option>
+    </mat-select>
+    <button mat-flat-button color="primary">Send</button>
+  </form>
+</ng-container>

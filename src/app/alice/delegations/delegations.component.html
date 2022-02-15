@@ -1,0 +1,12 @@
+<ng-container *ngIf="delegations$ | async as delegations">
+  <h3>*Delegations</h3>
+  <ng-container *ngFor="let delegation_response of delegations">
+    <span class="break-all"
+      >validator: {{ delegation_response.delegation?.validator_address }} </span
+    ><br />
+    <span>
+      token: {{ delegation_response.balance?.denom }} balance:
+      {{ delegation_response.balance?.amount }}
+    </span>
+  </ng-container></ng-container
+>

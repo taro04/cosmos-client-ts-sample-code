@@ -19,65 +19,43 @@ import {
 })
 export class BalancesComponent implements OnInit {
   @Input()
-  mnemonic?: string;
+  address?: AccAddress;
 
   @Input()
   sdk?: cosmosclient.CosmosSDK | null;
 
-  publicKey$: Observable<cosmosclient.PubKey>;
-  accAddress$: Observable<cosmosclient.AccAddress>;
+  valAddress$: Observable<cosmosclient.AccAddress | undefined>;
   balances$: Observable<InlineResponse20028Balances[] | undefined>;
-
   timer$: Observable<number> = timer(0, 3 * 1000);
 
   constructor() {
-    this.publicKey$ = from(
-      cosmosclient.generatePrivKeyFromMnemonic(this.mnemonic || '')
-    ).pipe(
-      map((privatekey) => {
-        const privateKey = new proto.cosmos.crypto.secp256k1.PrivKey({
-          key: privatekey,
-        });
-        return privateKey.pubKey();
-      })
-    );
-
-    this.accAddress$ = this.publicKey$.pipe(
-      map((pubkey) => cosmosclient.AccAddress.fromPublicKey(pubkey))
-    );
-
-    this.balances$ = combineLatest([this.timer$, this.accAddress$]).pipe(
-      mergeMap(([n, accAddress]) => {
-        //if (this.sdk) {
-        if (this.sdk === undefined || this.sdk === null) {
-          console.log(n, ' []daze', accAddress.toString());
-          return [];
+    this.valAddress$ = this.timer$.pipe(
+      map(() => {
+        if (this.address) {
+          return cosmosclient.ValAddress.fromString(this.address.toString());
         } else {
-          console.log(n, ' OK daze', accAddress.toString());
-          return rest.bank
-            .allBalances(this.sdk, accAddress)
-            .then((res) => res.data.balances);
+          return undefined;
         }
       })
     );
 
-    this.balances$.subscribe((x) => console.log(x, this.sdk, this.mnemonic));
-    this.publicKey$.subscribe((x) => console.log(x));
-    this.accAddress$.subscribe((x) => console.log(x));
-  }
-
-  ngOnInit(): void {}
-
-  ngOnChanges() {
-    this.publicKey$ = from(
-      cosmosclient.generatePrivKeyFromMnemonic(this.mnemonic || '')
-    ).pipe(
-      map((privatekey) => {
-        const privateKey = new proto.cosmos.crypto.secp256k1.PrivKey({
-          key: privatekey,
-        });
-        return privateKey.pubKey();
+    this.balances$ = this.timer$.pipe(
+      mergeMap((t) => {
+        //if (this.sdk) {
+        if (
+          this.sdk === undefined ||
+          this.sdk === null ||
+          this.address === undefined
+        ) {
+          return [];
+        } else {
+          return rest.bank
+            .allBalances(this.sdk, this.address)
+            .then((res) => res.data.balances);
+        }
       })
     );
   }
+
+  ngOnInit(): void {}
 }
