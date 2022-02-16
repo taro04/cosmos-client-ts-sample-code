@@ -19,33 +19,23 @@ import {
 })
 export class BalancesComponent implements OnInit {
   @Input()
-  address?: AccAddress;
+  address?: AccAddress | null;
 
   @Input()
   sdk?: cosmosclient.CosmosSDK | null;
 
-  valAddress$: Observable<cosmosclient.AccAddress | undefined>;
   balances$: Observable<InlineResponse20028Balances[] | undefined>;
   timer$: Observable<number> = timer(0, 3 * 1000);
 
   constructor() {
-    this.valAddress$ = this.timer$.pipe(
-      map(() => {
-        if (this.address) {
-          return cosmosclient.ValAddress.fromString(this.address.toString());
-        } else {
-          return undefined;
-        }
-      })
-    );
-
     this.balances$ = this.timer$.pipe(
       mergeMap((t) => {
         //if (this.sdk) {
         if (
           this.sdk === undefined ||
           this.sdk === null ||
-          this.address === undefined
+          this.address === undefined ||
+          this.address === null
         ) {
           return [];
         } else {

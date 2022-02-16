@@ -13,31 +13,19 @@ export class AliceComponent implements OnInit {
   @Input()
   sdk?: cosmosclient.CosmosSDK | null;
 
-  address?: AccAddress;
-  toAddress?: AccAddress;
+  @Input()
+  accAddress?: AccAddress | null;
+
+  @Input()
+  toAddress?: AccAddress | null;
+
+  @Input()
+  valAddress?: AccAddress | null;
 
   mnemonic =
-    'dragon elder fetch rain woman stadium defy pipe lunar try finish belt bracket sting together valid police shiver faint toast margin canvas auto age';
-  publicKey$: Observable<cosmosclient.PubKey>;
+    'comfort runway shiver rebuild rich clutch category return outside betray pitch vibrant shallow sweet erase route torch slight theory tissue boring group album mother';
 
-  constructor() {
-    this.publicKey$ = from(
-      cosmosclient.generatePrivKeyFromMnemonic(this.mnemonic)
-    ).pipe(
-      map((privatekey) => {
-        const privateKey = new proto.cosmos.crypto.secp256k1.PrivKey({
-          key: privatekey,
-        });
-        this.address = cosmosclient.AccAddress.fromPublicKey(
-          privateKey.pubKey()
-        );
-        console.log(this.address);
-        return privateKey.pubKey();
-      })
-    );
-
-    this.publicKey$.subscribe((x) => console.log(x));
-  }
+  constructor() {}
 
   ngOnInit(): void {}
 }

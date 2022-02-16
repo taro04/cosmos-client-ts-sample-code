@@ -1,8 +1,3 @@
-<h3>*ValidatorAddress</h3>
-<div *ngIf="valAddress$ | async as valAddress">
-  <span class="break-all">{{ valAddress }}</span>
-</div>
-
 <!--所持tokenを表示-->
 <ng-container *ngIf="balances$ | async as balances">
   <h3>*Balances</h3>

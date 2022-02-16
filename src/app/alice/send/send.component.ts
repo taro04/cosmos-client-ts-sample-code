@@ -13,7 +13,7 @@ export class SendComponent implements OnInit {
   mnemonic?: string;
 
   @Input()
-  toAddress?: AccAddress;
+  toAddress?: AccAddress | null;
 
   @Input()
   sdk?: cosmosclient.CosmosSDK | null;

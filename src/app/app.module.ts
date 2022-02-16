@@ -12,6 +12,7 @@ import { AliceModule } from './alice/alice.module';
 import { BobModule } from './bob/bob.module';
 import { BalancesModule } from './alice/balances/balances.module';
 import { SendModule } from './alice/send/send.module';
+import { StakingDelegateModule } from './alice/staking-delegate/staking-delegate.module';
 
 @NgModule({
   declarations: [AppComponent, AliceComponent, BobComponent],
@@ -27,6 +28,7 @@ import { SendModule } from './alice/send/send.module';
     BobModule,
     BalancesModule,
     SendModule,
+    StakingDelegateModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

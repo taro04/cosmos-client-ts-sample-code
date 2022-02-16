@@ -12,7 +12,7 @@ import { InlineResponse20063DelegationResponses } from '@cosmos-client/core/cjs/
 })
 export class DelegationsComponent implements OnInit {
   @Input()
-  address?: AccAddress;
+  address?: AccAddress | null;
 
   @Input()
   sdk?: cosmosclient.CosmosSDK | null;
@@ -28,7 +28,8 @@ export class DelegationsComponent implements OnInit {
         if (
           this.sdk === undefined ||
           this.sdk === null ||
-          this.address === undefined
+          this.address === undefined ||
+          this.address === null
         ) {
           return [];
         } else {

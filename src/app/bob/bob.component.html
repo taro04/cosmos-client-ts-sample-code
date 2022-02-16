@@ -1,3 +1,19 @@
-<app-balances [address]="address" [sdk]="sdk"></app-balances>
-<app-delegations [address]="address" [sdk]="sdk"></app-delegations>
-<app-send [mnemonic]="mnemonic" [toAddress]="address" [sdk]="sdk"></app-send>
+<div *ngIf="accAddress as accAddressBob">
+  <h3>*AccountAddress</h3>
+  <span class="break-all">{{ accAddressBob }}</span>
+</div>
+
+<div *ngIf="valAddress as valAddressBob">
+  <h3>*ValidatorAddress</h3>
+  <span class="break-all">{{ valAddressBob }}</span>
+</div>
+
+<app-balances [address]="accAddress" [sdk]="sdk"></app-balances>
+<app-delegations [address]="accAddress" [sdk]="sdk"></app-delegations>
+<app-send [mnemonic]="mnemonic" [toAddress]="toAddress" [sdk]="sdk"></app-send>
+
+<app-staking-delegate
+  [mnemonic]="mnemonic"
+  [valAddress]="valAddress"
+  [sdk]="sdk"
+></app-staking-delegate>
