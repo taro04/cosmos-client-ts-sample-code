@@ -1,41 +1,21 @@
-<!--Dashboard-->
-<div class="grid-container">
-  <h1 class="mat-h1">My-app</h1>
+<section class="text-gray-600 body-font overflow-hidden">
+  <div class="container px-5 py-24 mx-auto">
+    <div class="flex flex-wrap -m-6">
+      <div
+        class="p-6 text-gray-500 bg-white shadow-lg border border-gray-100 rounded-2xl  md:w-1/2 flex flex-col items-start font-medium">
+        <h2 class="sm:text-3xl text-2xl title-font font-medium text-gray-900 mt-4 mb-4">
+          Alice</h2>
+        <app-alice [sdk]="sdk" [accAddress]="accAddressAlice$ | async" [valAddress]="valAddressAlice$ | async"
+          [toAddress]="accAddressBob$ | async"></app-alice>
+      </div>
 
-  <!--supply-->
-  <mat-grid-list cols="2" rowHeight="600px">
-    <!--Bob-->
-    <mat-grid-tile [colspan]="1" [rowspan]="1">
-      <mat-card class="dashboard-card">
-        <mat-card-header>
-          <mat-card-title> Bob </mat-card-title>
-        </mat-card-header>
-        <mat-card-content class="dashboard-card-content">
-          <app-bob
-            [sdk]="sdk"
-            [accAddress]="accAddressBob$ | async"
-            [valAddress]="valAddressBob$ | async"
-            [toAddress]="accAddressAlice$ | async"
-          ></app-bob>
-        </mat-card-content>
-      </mat-card>
-    </mat-grid-tile>
-
-    <!--Alice-->
-    <mat-grid-tile [colspan]="1" [rowspan]="1">
-      <mat-card class="dashboard-card">
-        <mat-card-header>
-          <mat-card-title>Alice</mat-card-title>
-        </mat-card-header>
-        <mat-card-content class="dashboard-card-content">
-          <app-alice
-            [sdk]="sdk"
-            [accAddress]="accAddressAlice$ | async"
-            [valAddress]="valAddressAlice$ | async"
-            [toAddress]="accAddressBob$ | async"
-          ></app-alice>
-        </mat-card-content>
-      </mat-card>
-    </mat-grid-tile>
-  </mat-grid-list>
-</div>
+      <div
+        class="p-6 text-gray-500 bg-white shadow-lg border border-gray-100 rounded-2xl  md:w-1/2 flex flex-col items-start font-medium">
+        <h2 class="sm:text-3xl text-2xl title-font font-medium text-gray-900 mt-4 mb-4">
+          Bob</h2>
+        <app-bob [sdk]="sdk" [accAddress]="accAddressBob$ | async" [valAddress]="valAddressAlice$ | async"
+          [toAddress]="accAddressAlice$ | async"></app-bob>
+      </div>
+    </div>
+  </div>
+</section>

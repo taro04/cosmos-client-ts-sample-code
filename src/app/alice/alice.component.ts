@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { cosmosclient, proto, rest } from '@cosmos-client/core';
-import { AccAddress } from '@cosmos-client/core/cjs/types';
+import { AccAddress, ValAddress } from '@cosmos-client/core/cjs/types';
 import { combineLatest, from, of, Observable, timer } from 'rxjs';
 import { mergeMap, map } from 'rxjs/operators';
 
@@ -20,12 +20,11 @@ export class AliceComponent implements OnInit {
   toAddress?: AccAddress | null;
 
   @Input()
-  valAddress?: AccAddress | null;
+  valAddress?: ValAddress | null;
 
   mnemonic =
-    'comfort runway shiver rebuild rich clutch category return outside betray pitch vibrant shallow sweet erase route torch slight theory tissue boring group album mother';
+    'good zone border march wreck arctic guide gadget distance whisper knife ginger scale silly else trend street hole rule hundred walk aim attend pulp'
+  constructor() { }
 
-  constructor() {}
-
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 }

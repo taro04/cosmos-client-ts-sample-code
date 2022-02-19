@@ -12,18 +12,13 @@ export class AppComponent implements OnInit {
   nodeURL = 'http://localhost:1317';
   chainID = 'mars';
 
-  //  mnemonicA =
-  //    'power cereal remind render enhance muffin kangaroo snow hill nature bleak defense summer crisp scare muscle tiger dress behave verb pond merry voyage already';
-  //  mnemonicB =
-  //    'funny jungle scout crisp tissue dish talk tattoo alone scheme clog kiwi delay property current argue conduct west bounce reason abandon coral lawsuit hunt';
-  //pubkey ***サンプルコードのため、ニーモニックをハードコーディングしています。***
-  //       ***アカウントのすべてのコントロールを渡すことになるので、決してマネしないよう。***
+  // ***サンプルコードのため、ニーモニックをハードコーディングしています。***
+  // ***アカウントのすべてのコントロールを渡すことになるので、決してマネしないよう。***
 
   mnemonicA =
-    'comfort runway shiver rebuild rich clutch category return outside betray pitch vibrant shallow sweet erase route torch slight theory tissue boring group album mother';
-
+    'good zone border march wreck arctic guide gadget distance whisper knife ginger scale silly else trend street hole rule hundred walk aim attend pulp'
   mnemonicB =
-    'false service fork grab lumber earn spatial window can endless empower wing route taxi trust play step crater sketch twist poem angry fashion cry';
+    'rhythm abuse hamster ball student material control length wet engage learn umbrella beyond aisle quick canal tooth reject pyramid adult paddle enter fitness orphan';
 
   accAddressAlice$: Observable<cosmosclient.AccAddress>;
   valAddressAlice$: Observable<cosmosclient.ValAddress>;
@@ -58,8 +53,6 @@ export class AppComponent implements OnInit {
       map((pubkey) => cosmosclient.ValAddress.fromPublicKey(pubkey))
     );
 
-    ///////////////////////////////////////////////////////////////////////////////
-
     this.publicKeyBob$ = from(
       cosmosclient.generatePrivKeyFromMnemonic(this.mnemonicB)
     ).pipe(
@@ -79,8 +72,7 @@ export class AppComponent implements OnInit {
       map((pubkey) => cosmosclient.ValAddress.fromPublicKey(pubkey))
     );
 
-    ///////////////////////////////////////////////////////////////////////////////
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 }

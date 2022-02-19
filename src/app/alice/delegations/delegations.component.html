@@ -1,12 +1,26 @@
-<ng-container *ngIf="delegations$ | async as delegations">
-  <h3>*Delegations</h3>
-  <ng-container *ngFor="let delegation_response of delegations">
-    <span class="break-all"
-      >validator: {{ delegation_response.delegation?.validator_address }} </span
-    ><br />
-    <span>
-      token: {{ delegation_response.balance?.denom }} balance:
-      {{ delegation_response.balance?.amount }}
-    </span>
+<div class="my-2">
+  <ng-container *ngIf="delegations$ | async as delegations">
+    <ng-container *ngIf="( delegations.length || 0) > 0">
+      <span
+        class="inline-block py-1 px-2 rounded bg-green-50 text-green-500 text-xs font-medium tracking-widest">Delegations</span>
+      <ng-container *ngFor="let delegation_response of delegations">
+        <div class="px-4 py-1">Validator</div>
+        <span class=" px-4 py-1 break-all "> {{ delegation_response.delegation?.validator_address }} </span>
+        <table class="table-auto">
+          <thead>
+            <tr>
+              <th class="px-4 py-1">Token</th>
+              <th class="px-4 py-1">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="border px-4 py-1"> {{ delegation_response.balance?.denom }} </td>
+              <td class="border px-4 py-1"> {{ delegation_response.balance?.amount }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </ng-container>
+    </ng-container>
   </ng-container>
-</ng-container>
+</div>

@@ -1,13 +1,4 @@
-<div class="mb-4" *ngIf="accAddress as accAddressAlice">
-  <p>*AccountAddress</p>
-  <span class="break-all">{{ accAddressAlice }}</span>
-</div>
-
-<div *ngIf="valAddress as valAddressAlice">
-  <p>*ValidatorAddress</p>
-  <span class="break-all">{{ valAddressAlice }}</span>
-</div>
-
+<app-address [accAddress]="accAddress" [valAddress]="valAddress"></app-address>
 <app-balances [address]="accAddress" [sdk]="sdk"></app-balances>
 <app-delegations [address]="accAddress" [sdk]="sdk"></app-delegations>
 <app-send [mnemonic]="mnemonic" [toAddress]="toAddress" [sdk]="sdk"></app-send>

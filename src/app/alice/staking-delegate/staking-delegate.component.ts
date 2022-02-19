@@ -1,7 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { combineLatest, from, of, Observable, timer } from 'rxjs';
 import { cosmosclient, proto, rest } from '@cosmos-client/core';
 import { AccAddress } from '@cosmos-client/core/cjs/types/address/acc-address';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { RequestListSnapshots } from 'mars/vue/src/store/generated/cosmos/cosmos-sdk/cosmos.authz.v1beta1/module/types/tendermint/abci/types';
 
 @Component({
   selector: 'app-staking-delegate',
@@ -18,9 +19,13 @@ export class StakingDelegateComponent implements OnInit {
   @Input()
   valAddress?: AccAddress | null;
 
-  constructor() {}
+  denoms = ['stake', 'token'];
 
-  ngOnInit(): void {}
+  constructor(
+    private readonly snackBar: MatSnackBar,
+  ) { }
+
+  ngOnInit(): void { }
 
   async stakingDelegate(amount: proto.cosmos.base.v1beta1.ICoin) {
     if (this.sdk === undefined || this.sdk === null) return;
@@ -93,7 +98,7 @@ export class StakingDelegateComponent implements OnInit {
       mode: rest.tx.BroadcastTxMode.Block,
     });
 
-    console.log('deli', result);
-    return result.data.tx_response?.txhash || '';
+    console.log('staking', result);
+    return
   }
 }

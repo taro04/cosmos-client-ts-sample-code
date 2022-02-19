@@ -24,9 +24,9 @@ export class BobComponent implements OnInit {
   valAddress?: ValAddress | null;
 
   mnemonic =
-    'false service fork grab lumber earn spatial window can endless empower wing route taxi trust play step crater sketch twist poem angry fashion cry';
+    'rhythm abuse hamster ball student material control length wet engage learn umbrella beyond aisle quick canal tooth reject pyramid adult paddle enter fitness orphan';
 
-  constructor() {}
+  constructor() { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 }

@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { cosmosclient, proto, rest } from '@cosmos-client/core';
 import { AccAddress } from '@cosmos-client/core/cjs/types/address/acc-address';
-import { combineLatest, from, of, Observable, timer } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-send',
@@ -23,9 +23,11 @@ export class SendComponent implements OnInit {
   gasDenom = this.denoms[0];
   //color = 'primary';
 
-  constructor() {}
+  constructor(
+    private readonly snackBar: MatSnackBar,
+  ) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   //txを送信
   async sendTx(
@@ -168,7 +170,14 @@ export class SendComponent implements OnInit {
     const res = await rest.tx.broadcastTx(sdk, {
       tx_bytes: txBuilder.txBytes(),
       mode: rest.tx.BroadcastTxMode.Block,
-    });
+    }).then(res => {
+      this.snackBar.open(`Successfully sent: ${res.data.tx_response?.logs?.toString()}`, 'close', {
+        duration: 30000,
+      });
+    }
+    )
+
+
     console.log('tx_res', res);
   }
 }

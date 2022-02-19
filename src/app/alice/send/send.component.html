@@ -1,27 +1,27 @@
-<p>*Token Send</p>
 <!--送信フォーム-->
-<ng-container *ngIf="toAddress as accAddress">
-  <form
-    #formB="ngForm"
-    (submit)="
+<div class="my-2">
+  <ng-container *ngIf="toAddress as accAddress">
+    <span class="inline-block py-1 px-2 rounded bg-indigo-50 text-indigo-500 text-xs font-medium tracking-widest">Token
+      Send</span>
+    <form #formB="ngForm" (submit)="
       sendTx(mnemonic || '', toAddress, denomBRef.value, amountBRef.value)
-    "
-  >
-    <mat-form-field appearance="fill">
-      <mat-label>amount</mat-label>
-      <input
-        #amountBRef
-        matInput
-        required
-        id="amountValue"
-        name="amountValue"
-      />
-    </mat-form-field>
-    <mat-select #denomBRef placeholder="Select" name="denomOption" required>
-      <mat-option *ngFor="let denom of denoms" [value]="denom">
-        {{ denom }}
-      </mat-option>
-    </mat-select>
-    <button mat-flat-button color="primary">Send</button>
-  </form>
-</ng-container>
+    ">
+      <div class="flex flex-row content-content items-start">
+        <mat-form-field>
+          <mat-label>amount</mat-label>
+          <input #amountBRef matInput required id="amountValue" name="amountValue" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-select #denomBRef placeholder="Select" name="denomOption" required>
+            <mat-option *ngFor="let denom of denoms" [value]="denom">
+              {{ denom }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button class="ml-2" mat-flat-button color="primary">Send</button>
+
+      </div>
+    </form>
+  </ng-container>
+</div>
