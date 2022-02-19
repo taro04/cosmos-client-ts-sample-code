@@ -1,0 +1,20 @@
+<ng-container *ngIf="balances$ | async as balances">
+  <div class="inline-block py-1 px-2 rounded bg-green-50 text-green-500 text-xs font-medium tracking-widest">Balances
+  </div>
+  <table class="table-auto">
+    <thead>
+      <tr>
+        <th class="px-4 py-2">Token</th>
+        <th class="px-4 py-2">Balance</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let balance of balances">
+        <tr>
+          <td class="border px-4 py-2"> {{ balance.denom }}</td>
+          <td class="border px-4 py-2"> {{ balance.amount }}</td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+</ng-container>
