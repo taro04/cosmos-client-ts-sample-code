@@ -18,13 +18,16 @@ export class BobComponent implements OnInit {
   accAddress?: AccAddress | null;
 
   @Input()
+  valAddress?: ValAddress | null;
+
+  @Input()
   toAddress?: AccAddress | null;
 
   @Input()
-  valAddress?: ValAddress | null;
+  toValAddress?: ValAddress | null;
 
-  mnemonic =
-    'rhythm abuse hamster ball student material control length wet engage learn umbrella beyond aisle quick canal tooth reject pyramid adult paddle enter fitness orphan';
+  @Input()
+  mnemonic?: string | null;
 
   constructor() { }
 

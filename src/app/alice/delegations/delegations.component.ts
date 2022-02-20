@@ -42,5 +42,5 @@ export class DelegationsComponent implements OnInit {
     //this.delegations$.subscribe((x) => console.log(x));
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 }

@@ -22,8 +22,9 @@ export class AliceComponent implements OnInit {
   @Input()
   valAddress?: ValAddress | null;
 
-  mnemonic =
-    'good zone border march wreck arctic guide gadget distance whisper knife ginger scale silly else trend street hole rule hundred walk aim attend pulp'
+  @Input()
+  mnemonic?: string | null;
+
   constructor() { }
 
   ngOnInit(): void { }

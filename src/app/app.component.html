@@ -6,15 +6,16 @@
         <h2 class="sm:text-3xl text-2xl title-font font-medium text-gray-900 mt-4 mb-4">
           Alice</h2>
         <app-alice [sdk]="sdk" [accAddress]="accAddressAlice$ | async" [valAddress]="valAddressAlice$ | async"
-          [toAddress]="accAddressBob$ | async"></app-alice>
+          [toAddress]="accAddressBob$ | async" [mnemonic]="mnemonicA"></app-alice>
       </div>
 
       <div
         class="p-6 text-gray-500 bg-white shadow-lg border border-gray-100 rounded-2xl  md:w-1/2 flex flex-col items-start font-medium">
         <h2 class="sm:text-3xl text-2xl title-font font-medium text-gray-900 mt-4 mb-4">
           Bob</h2>
-        <app-bob [sdk]="sdk" [accAddress]="accAddressBob$ | async" [valAddress]="valAddressAlice$ | async"
-          [toAddress]="accAddressAlice$ | async"></app-bob>
+        <app-bob [sdk]="sdk" [accAddress]="accAddressBob$ | async" [valAddress]="valAddressBob$ | async"
+          [toAddress]="accAddressAlice$ | async" [toValAddress]="valAddressAlice$ | async" [mnemonic]="mnemonicB">
+        </app-bob>
       </div>
     </div>
   </div>

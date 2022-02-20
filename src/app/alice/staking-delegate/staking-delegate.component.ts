@@ -11,7 +11,7 @@ import { RequestListSnapshots } from 'mars/vue/src/store/generated/cosmos/cosmos
 })
 export class StakingDelegateComponent implements OnInit {
   @Input()
-  mnemonic?: string;
+  mnemonic?: string | null;
 
   @Input()
   sdk?: cosmosclient.CosmosSDK | null;

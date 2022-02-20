@@ -10,7 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class SendComponent implements OnInit {
   @Input()
-  mnemonic?: string;
+  mnemonic?: string | null;
 
   @Input()
   toAddress?: AccAddress | null;
@@ -21,7 +21,6 @@ export class SendComponent implements OnInit {
   denoms = ['stake', 'token'];
   gasPrice = '0.1';
   gasDenom = this.denoms[0];
-  //color = 'primary';
 
   constructor(
     private readonly snackBar: MatSnackBar,
@@ -36,6 +35,9 @@ export class SendComponent implements OnInit {
     denom: string,
     amount: string
   ): Promise<void> {
+
+    console.log(mnemonic)
+
     //sdk
     if (this.sdk === undefined || this.sdk === null) return;
     const sdk = this.sdk;
@@ -43,6 +45,12 @@ export class SendComponent implements OnInit {
       denom: denom,
       amount: amount,
     };
+
+    //mnemonic
+    if (mnemonic === "") {
+      console.log("mnemonic kara", mnemonic)
+      return;
+    }
 
     //Address
     const privateKey = new proto.cosmos.crypto.secp256k1.PrivKey({
@@ -170,12 +178,7 @@ export class SendComponent implements OnInit {
     const res = await rest.tx.broadcastTx(sdk, {
       tx_bytes: txBuilder.txBytes(),
       mode: rest.tx.BroadcastTxMode.Block,
-    }).then(res => {
-      this.snackBar.open(`Successfully sent: ${res.data.tx_response?.logs?.toString()}`, 'close', {
-        duration: 30000,
-      });
-    }
-    )
+    })
 
 
     console.log('tx_res', res);

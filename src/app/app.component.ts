@@ -16,10 +16,9 @@ export class AppComponent implements OnInit {
   // ***アカウントのすべてのコントロールを渡すことになるので、決してマネしないよう。***
 
   mnemonicA =
-    'good zone border march wreck arctic guide gadget distance whisper knife ginger scale silly else trend street hole rule hundred walk aim attend pulp'
+    "cake make rotate raise quiz embody business resist wrestle weasel march furnace sausage sick theme tonight december jar enroll drink despair display fame tennis"
   mnemonicB =
-    'rhythm abuse hamster ball student material control length wet engage learn umbrella beyond aisle quick canal tooth reject pyramid adult paddle enter fitness orphan';
-
+    "couple canvas maze pause energy force core hidden raccoon panel swear kind long develop illness bonus heavy east nuclear brown idle cherry fuel mobile"
   accAddressAlice$: Observable<cosmosclient.AccAddress>;
   valAddressAlice$: Observable<cosmosclient.ValAddress>;
   publicKeyAlice$: Observable<cosmosclient.PubKey>;

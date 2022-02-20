@@ -1,15 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { combineLatest, from, of, Observable, timer } from 'rxjs';
-import { mergeMap, map } from 'rxjs/operators';
+import { Observable, timer } from 'rxjs';
+import { mergeMap, } from 'rxjs/operators';
 import { AccAddress } from '@cosmos-client/core/cjs/types/address/acc-address';
-import { cosmosclient, proto, rest } from '@cosmos-client/core';
+import { cosmosclient, rest } from '@cosmos-client/core';
 import {
   InlineResponse20028Balances,
-  InlineResponse20033,
-  InlineResponse20063,
-  QueryTotalSupplyResponseIsTheResponseTypeForTheQueryTotalSupplyRPCMethod,
-  QueryValidatorsResponseIsResponseTypeForTheQueryValidatorsRPCMethod,
-  CosmosDistributionV1beta1QueryCommunityPoolResponse,
 } from '@cosmos-client/core/cjs/openapi/api';
 
 @Component({
@@ -30,7 +25,6 @@ export class BalancesComponent implements OnInit {
   constructor() {
     this.balances$ = this.timer$.pipe(
       mergeMap((t) => {
-        //if (this.sdk) {
         if (
           this.sdk === undefined ||
           this.sdk === null ||
@@ -47,5 +41,5 @@ export class BalancesComponent implements OnInit {
     );
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 }
