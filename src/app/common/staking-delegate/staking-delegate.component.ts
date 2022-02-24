@@ -2,7 +2,6 @@ import { Component, OnInit, Input } from '@angular/core';
 import { cosmosclient, proto, rest } from '@cosmos-client/core';
 import { AccAddress } from '@cosmos-client/core/cjs/types/address/acc-address';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { RequestListSnapshots } from 'mars/vue/src/store/generated/cosmos/cosmos-sdk/cosmos.authz.v1beta1/module/types/tendermint/abci/types';
 
 @Component({
   selector: 'app-staking-delegate',

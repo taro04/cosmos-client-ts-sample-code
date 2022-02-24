@@ -180,7 +180,6 @@ export class SendComponent implements OnInit {
       mode: rest.tx.BroadcastTxMode.Block,
     })
 
-
     console.log('tx_res', res);
   }
 }

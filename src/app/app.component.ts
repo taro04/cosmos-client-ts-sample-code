@@ -19,6 +19,7 @@ export class AppComponent implements OnInit {
     "cake make rotate raise quiz embody business resist wrestle weasel march furnace sausage sick theme tonight december jar enroll drink despair display fame tennis"
   mnemonicB =
     "couple canvas maze pause energy force core hidden raccoon panel swear kind long develop illness bonus heavy east nuclear brown idle cherry fuel mobile"
+
   accAddressAlice$: Observable<cosmosclient.AccAddress>;
   valAddressAlice$: Observable<cosmosclient.ValAddress>;
   publicKeyAlice$: Observable<cosmosclient.PubKey>;

@@ -11,16 +11,15 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AliceComponent } from './alice/alice.component';
 import { BobComponent } from './bob/bob.component';
 
-import { AddressModule } from './alice/address/address.module';
-import { BalancesModule } from './alice/balances/balances.module';
-import { DelegationsModule } from './alice/delegations/delegations.module';
-import { SendModule } from './alice/send/send.module';
-import { StakingDelegateModule } from './alice/staking-delegate/staking-delegate.module';
-
+import { AddressModule } from './common/address/address.module';
+import { BalancesModule } from './common/balances/balances.module';
+import { DelegationsModule } from './common/delegations/delegations.module';
+import { SendModule } from './common/send/send.module';
+import { StakingDelegateModule } from './common/staking-delegate/staking-delegate.module';
 
 
 @NgModule({
-  declarations: [AppComponent, AliceComponent, BobComponent],
+  declarations: [AppComponent, AliceComponent, BobComponent,],
   imports: [
     BrowserModule,
     AppRoutingModule,

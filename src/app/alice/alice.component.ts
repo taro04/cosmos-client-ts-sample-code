@@ -1,8 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { cosmosclient, proto, rest } from '@cosmos-client/core';
+import { cosmosclient, } from '@cosmos-client/core';
 import { AccAddress, ValAddress } from '@cosmos-client/core/cjs/types';
-import { combineLatest, from, of, Observable, timer } from 'rxjs';
-import { mergeMap, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-alice',
